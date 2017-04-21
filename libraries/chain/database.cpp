@@ -3809,6 +3809,19 @@ void database::apply_hardfork( uint32_t hardfork )
       case STEEMIT_HARDFORK_0_18:
          break;
       case STEEMIT_HARDFORK_0_19:
+         {
+            const auto& delegation_idx = get_index< vesting_delegation_index, by_id >();
+            auto itr = delegation_idx.begin();
+
+            while( itr != delegation_idx.end() )
+            {
+               const auto& current = *itr; ++itr;
+               if( current.vesting_shares.amount == 0 )
+               {
+                  remove( current );
+               }
+            }
+         }
          break;
       default:
          break;
